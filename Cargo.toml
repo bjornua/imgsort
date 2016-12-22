@@ -1,0 +1,18 @@
+[package]
+name = "imgsort"
+version = "0.0.1"
+authors = ["Bjørn Uhre Arnholtz <rugkiks@gmail.com>"]
+repository = "https://github.com/bjornua/imgsort"
+license = "MIT"
+readme = "README.md"
+
+[profile.dev]
+debug = true
+
+[dependencies.gtk]
+version = "0.1.1"
+features = ["v3_10"]
+
+[dependencies]
+gdk-pixbuf = "0.1.1"
+glib = "0.1.1"
