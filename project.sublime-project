@@ -20,5 +20,14 @@
 		"translate_tabs_to_spaces": true,
 		"trim_automatic_white_space": true,
 		"trim_trailing_white_space_on_save": true
-	}
+	},
+    "build_systems":
+    [
+        {
+            "name": "GTK Cargo",
+            "shell_cmd": "GTK_DEBUG=interactive cargo run",
+            "selector": "source.rust",
+            "working_dir": "${project_path:${folder}}"
+        }
+    ]
 }
