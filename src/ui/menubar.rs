@@ -1,15 +1,14 @@
 use gtk;
 use gtk::prelude::*;
 
-pub struct MenuBar {
+pub struct MenuBar<'a> {
     widget: gtk::MenuBar,
-    parent: gtk::Window
+    parent: &'a gtk::Window,
+    onDirectory: &'a fn()
 }
 
-impl MenuBar {
-    pub fn new(parent: &gtk::Window) -> Self  {
-        let parent = parent.clone();
-
+impl<'a> MenuBar<'a> {
+    pub fn new(parent: &'a gtk::Window, ) -> MenuBar<'a>  {
         let menubar = gtk::MenuBar::new();
         let menu_file = {
             let menu = gtk::Menu::new();
@@ -18,18 +17,54 @@ impl MenuBar {
             item.set_submenu(Some(&menu));
             let parent = parent.clone();
             let item_open = menu_item("_Open Directory", move |_| {
-                gtk::FileChooserDialog::new(None, Some(&parent), gtk::FileChooserAction::SelectFolder).run();
+                println!("{:?}", prompt_directory(&parent));
             });
             menu.add(&item_open);
 
             item
         };
         menubar.append(&menu_file);
-        return MenuBar { parent: parent, widget: menubar }
+        return MenuBar { parent: parent, widget: menubar, onDirectory: }
+    }
+    pub fn set_directory(&mut) {
+
     }
     pub fn get_menubar<'b>(&'b self) -> &'b gtk::MenuBar {
         &self.widget
     }
+}
+use std::path::PathBuf;
+
+pub fn prompt_directory(parent: &gtk::Window) -> Option<PathBuf> {
+    let response_ok: i32 = gtk::ResponseType::Ok.into();
+    let response_cancel: i32 = gtk::ResponseType::Cancel.into();
+    let response_delete_event: i32 = gtk::ResponseType::DeleteEvent.into();
+
+    let dialog = gtk::FileChooserDialog::new(None, Some(parent), gtk::FileChooserAction::SelectFolder);
+    dialog.set_local_only(true);
+    dialog.set_select_multiple(false);
+
+    dialog.add_button("_Cancel", response_cancel);
+    dialog.add_button("_Open Directory", response_ok);
+    dialog.set_default_response(response_ok);
+
+    let retval = match dialog.run() {
+        n if n == response_ok => {
+            let filename = dialog.get_filename();
+            dialog.destroy();
+            filename
+        }
+        n if n == response_cancel => {
+            dialog.destroy();
+            None
+        }
+        n if n == response_delete_event => {
+            None
+        }
+        n => panic!("Unexpected response type in prompt_directory {}", n)
+    };
+    // dialog.destroy();
+    retval
 }
 
 pub fn menu_item<F: Fn(&gtk::MenuItem) + 'static>(label: &'static str, action: F) -> gtk::MenuItem {
