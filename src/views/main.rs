@@ -3,19 +3,22 @@ use gtk::prelude::*;
 
 use ui;
 
-pub fn init() -> gtk::Box {
-    let b = gtk::Box::new(gtk::Orientation::Vertical, 0);
-    b.set_valign(gtk::Align::Start);
-    b.set_homogeneous(false);
+pub struct Main {
+    parent_window: gtk::Window
+}
 
-    let toolbar = ui::menubar::init();
-    b.add(&toolbar);
+impl Main {
+    pub fn new(parent_window: &gtk::Window) -> gtk::Box {
+        let b = gtk::Box::new(gtk::Orientation::Vertical, 0);
+        b.set_valign(gtk::Align::Start);
+        b.set_homogeneous(false);
 
-    let images = ui::images::init();
-    b.add(&images);
+        let menubar = ui::MenuBar::new(parent_window);
+        b.add(menubar.get_menubar());
 
-    return b
+        let images = ui::Images::new();
+        b.add(&images);
 
-
-
+        return b
+    }
 }

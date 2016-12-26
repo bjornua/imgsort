@@ -22,11 +22,10 @@ fn main () {
 
     let window = Window::new(WindowType::Toplevel);
 
-
     window.set_title("Image Sorter");
     window.set_default_size(350, 70);
 
-    let view = views::main::init();
+    let view = views::Main::new(&window);
     window.add(&view);
 
     window.show_all();
@@ -35,10 +34,6 @@ fn main () {
         gtk::main_quit();
         Inhibit(false)
     });
-
-    // button.connect_clicked(|_| {
-    //     println!("Clicked!");
-    // });
 
     gtk::main();
 }

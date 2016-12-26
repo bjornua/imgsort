@@ -24,10 +24,17 @@
     "build_systems":
     [
         {
-            "name": "GTK Cargo",
-            "shell_cmd": "GTK_DEBUG=interactive cargo run",
+            "name": "Cargo Run",
+            "cmd": ["cargo", "run"],
             "selector": "source.rust",
-            "working_dir": "${project_path:${folder}}"
+            "working_dir": "${project_path:${folder}}",
+            "variants": [
+                {
+                "name": "GTK Interactive Debug",
+                "env": {"GTK_DEBUG": "interactive"}
+
+                }
+            ]
         }
     ]
 }
