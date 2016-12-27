@@ -1,14 +1,14 @@
 use gtk;
 use gtk::prelude::*;
 
-pub struct MenuBar<'a> {
+pub struct MenuBar<'a, F: Fn(PathBuf) + 'a> {
     widget: gtk::MenuBar,
     parent: &'a gtk::Window,
-    onDirectory: &'a fn()
+    on_directory: &'a F
 }
 
-impl<'a> MenuBar<'a> {
-    pub fn new(parent: &'a gtk::Window, ) -> MenuBar<'a>  {
+impl<'a, F: Fn(PathBuf) + 'a> MenuBar<'a, F> {
+    pub fn new(parent: &'a gtk::Window, on_directory: &'a F) -> MenuBar<'a, F>  {
         let menubar = gtk::MenuBar::new();
         let menu_file = {
             let menu = gtk::Menu::new();
@@ -17,19 +17,21 @@ impl<'a> MenuBar<'a> {
             item.set_submenu(Some(&menu));
             let parent = parent.clone();
             let item_open = menu_item("_Open Directory", move |_| {
-                println!("{:?}", prompt_directory(&parent));
+                if let Some(path) = prompt_directory(&parent) {
+                    on_directory(path)
+                }
             });
             menu.add(&item_open);
 
             item
         };
         menubar.append(&menu_file);
-        return MenuBar { parent: parent, widget: menubar, onDirectory: }
+        return MenuBar { parent: parent, widget: menubar, on_directory: on_directory}
     }
-    pub fn set_directory(&mut) {
+    pub fn set_directory() {
 
     }
-    pub fn get_menubar<'b>(&'b self) -> &'b gtk::MenuBar {
+    pub fn get_menubar<'c>(&'c self) -> &'c gtk::MenuBar {
         &self.widget
     }
 }

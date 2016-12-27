@@ -13,7 +13,7 @@ impl Main {
         b.set_valign(gtk::Align::Start);
         b.set_homogeneous(false);
 
-        let menubar = ui::MenuBar::new(parent_window);
+        let menubar = ui::MenuBar::new(parent_window, |x| println!("{:?}", x));
         b.add(menubar.get_menubar());
 
         let images = ui::Images::new();
