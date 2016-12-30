@@ -1,4 +1,3 @@
-use glib;
 use std::error::Error as StdError;
 use std::fmt;
 use std::io;
@@ -7,9 +6,6 @@ use std::io;
 pub enum Error {
     IOError(io::Error),
     NoPixbuf,
-    // PathUTF8Error,
-    // FileNotFound(glib::Error),
-    // GLibError(glib::Error),
 }
 
 
@@ -22,7 +18,6 @@ impl StdError for Error {
     }
     fn cause(&self) -> Option<&StdError> {
         match *self {
-            // Error::PathUTF8Error => None,
             Error::IOError(ref e) => Some(e),
             Error::NoPixbuf => None
         }

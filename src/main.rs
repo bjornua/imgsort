@@ -27,6 +27,20 @@ fn main() {
     window.set_default_size(350, 70);
 
     let state = Rc::new(RefCell::new(state::State::new()));
+    use std::path::PathBuf;
+
+    state.borrow_mut().add_files(vec![
+        PathBuf::from("/home/bjorn/projects/imgsort/images/10.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/9.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/3.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/5.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/8.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/7.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/2.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/6.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/4.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/1.jpg"),
+    ]);
     let view: Rc<RefCell<Option<views::Main>>> = Rc::new(RefCell::new(None));
     let on_files = {
         let state = state.clone();
