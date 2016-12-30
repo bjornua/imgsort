@@ -1,29 +1,30 @@
 use glib;
 use std::error::Error as StdError;
 use std::fmt;
-
+use std::io;
 
 #[derive(Debug)]
 pub enum Error {
-    PathUTF8Error,
-    FileNotFound(glib::Error),
-    GLibError(glib::Error),
+    IOError(io::Error),
+    NoPixbuf,
+    // PathUTF8Error,
+    // FileNotFound(glib::Error),
+    // GLibError(glib::Error),
 }
 
 
 impl StdError for Error {
     fn description(&self) -> &str {
         match *self {
-            Error::PathUTF8Error => "Error while parsing path as utf-8",
-            Error::FileNotFound(_) => "Could not open file",
-            Error::GLibError(_) => "A GLib error happened",
+            Error::IOError(_) => "Could not open file",
+            Error::NoPixbuf => "Pixbuf was null",
         }
     }
     fn cause(&self) -> Option<&StdError> {
         match *self {
-            Error::PathUTF8Error => None,
-            Error::FileNotFound(ref e) |
-            Error::GLibError(ref e) => Some(e),
+            // Error::PathUTF8Error => None,
+            Error::IOError(ref e) => Some(e),
+            Error::NoPixbuf => None
         }
     }
 }

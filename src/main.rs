@@ -4,29 +4,45 @@
 mod image;
 mod ui;
 mod views;
+mod state;
+mod config;
 
 extern crate gtk;
 extern crate gdk_pixbuf;
 extern crate glib;
 
-
 use gtk::{Window, WindowType};
 use gtk::prelude::*;
+use std::cell::RefCell;
+use std::rc::Rc;
 
-
-fn main () {
+fn main() {
     if gtk::init().is_err() {
         println!("Failed to initialize GTK.");
         return;
     }
-
     let window = Window::new(WindowType::Toplevel);
 
-    window.set_title("Image Sorter");
+    window.set_title("Image Ranker");
     window.set_default_size(350, 70);
 
-    let view = views::Main::new(&window);
-    window.add(&view);
+    let state = Rc::new(RefCell::new(state::State::new()));
+    let view: Rc<RefCell<Option<views::Main>>> = Rc::new(RefCell::new(None));
+    let on_files = {
+        let state = state.clone();
+        let view = view.clone();
+        move |files| {
+            state.borrow_mut().add_files(files);
+            view.borrow_mut().as_mut().unwrap().update_state(&state.borrow());
+        }
+    };
+
+    {
+        let mut view = view.borrow_mut();
+        *view = Some(views::Main::new(&window, &state.borrow(), on_files));
+    }
+
+    window.add(view.borrow().as_ref().unwrap().get_gtk_box());
 
     window.show_all();
 

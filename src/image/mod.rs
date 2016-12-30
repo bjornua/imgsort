@@ -1,42 +1,51 @@
 mod error;
 
-use gdk_pixbuf::Pixbuf;
-use glib;
-use gtk;
+use gdk_pixbuf::{Pixbuf, PixbufLoader, InterpType};
+// use glib;
+// use gtk;
+use config;
 use std::path::Path;
+use std::fs::File;
+use std::io::prelude::*;
 
+pub fn get_new_dimensions((width, height): (i32, i32)) -> (i32, i32) {
+    let new_height = (height * config::MAX_WIDTH) / width;
 
-pub fn from_path<P: AsRef<Path>>(path: P) -> Result<gtk::Image, error::Error> {
-    let path = match path.as_ref().to_str() {
-        Some(s) => s,
-        None => return Err(error::Error::PathUTF8Error),
-    };
+    if new_height <= config::MAX_HEIGHT {
+        (config::MAX_WIDTH, new_height)
+    } else {
+        ((width * config::MAX_HEIGHT) / height, config::MAX_HEIGHT)
+    }
+}
 
-    let pixbuf = match Pixbuf::new_from_file(path) {
-        Ok(pixbuf) => pixbuf,
+pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Pixbuf, error::Error> {
+    // let path = path.as_ref();
+
+    let mut file = match File::open(path) {
+        Ok(f) => f,
         Err(e) => {
-            return match e.kind() {
-                Some(glib::FileError::Noent) => Err(error::Error::FileNotFound(e)),
-                Some(_) | None => return Err(error::Error::GLibError(e)),
-            }
+            return Err(error::Error::IOError(e))
         }
     };
-    let image = gtk::Image::new_from_pixbuf(Some(&pixbuf));
-    Ok(image)
+
+    let mut content = Vec::new();
+    let _ = file.read_to_end(&mut content);
+
+    let loader = PixbufLoader::new();
+    loader.loader_write(&content).unwrap();
+
+    let pixbuf = match loader.get_pixbuf() {
+        Some(pixbuf) => {
+            loader.close().unwrap();
+            pixbuf
+        }
+        None => {
+            loader.close().unwrap();
+            return Err(error::Error::NoPixbuf);
+        }
+    };
+    let (w, h) = get_new_dimensions((pixbuf.get_width(), pixbuf.get_height()));
+    let pixbuf = pixbuf.scale_simple(w, h, InterpType::Hyper).unwrap();
+    Ok(pixbuf)
 }
-//
 
-// if err.kind() == Some(glib::FileError::Noent) {
-//     msg.push_str(&format!("\nRelaunch this example from the same level as the \
-//                            `resources` folder"));
-// }
-
-// let dialog = MessageDialog::new(Some(window),
-//                                 DIALOG_MODAL,
-//                                 MessageType::Error,
-//                                 ButtonsType::Ok,
-//                                 &msg);
-// dialog.run();
-// dialog.destroy();
-// Continue(false);
-// Err(())

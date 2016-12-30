@@ -1,13 +1,12 @@
 use gtk;
 use gtk::prelude::*;
 
-pub struct MenuBar{
+pub struct MenuBar {
     widget: gtk::MenuBar,
-    // parent: &'a gtk::Window,
 }
 
 impl MenuBar {
-    pub fn new<F: Fn(Vec<PathBuf>) + 'static>(parent: &gtk::Window, on_files: F) -> MenuBar  {
+    pub fn new<F: Fn(Vec<PathBuf>) + 'static>(parent: &gtk::Window, on_files: F) -> MenuBar {
         let menubar = gtk::MenuBar::new();
         let menu_file = {
             let menu = gtk::Menu::new();
@@ -15,20 +14,15 @@ impl MenuBar {
             let item = menu_item("_File", |_| ());
             item.set_submenu(Some(&menu));
             let parent = parent.clone();
-            let item_open = menu_item("_Add files", move |_| {
-                on_files(prompt_files_add(&parent))
-            });
+            let item_open = menu_item("_Add files", move |_| on_files(prompt_files_add(&parent)));
             menu.add(&item_open);
 
             item
         };
         menubar.append(&menu_file);
-        return MenuBar { widget: menubar }
+        return MenuBar { widget: menubar };
     }
-    // pub fn set_directory() {
-
-    // }
-    pub fn get_menubar<'c>(&'c self) -> &'c gtk::MenuBar {
+    pub fn get_gtk_menubar<'c>(&'c self) -> &'c gtk::MenuBar {
         &self.widget
     }
 }
@@ -65,10 +59,8 @@ pub fn prompt_files_add(parent: &gtk::Window) -> Vec<PathBuf> {
             dialog.destroy();
             vec![]
         }
-        n if n == response_delete_event => {
-            vec![]
-        }
-        n => panic!("Unexpected response type in prompt_directory {}", n)
+        n if n == response_delete_event => vec![],
+        n => panic!("Unexpected response type in prompt_directory {}", n),
     };
     retval
 }
