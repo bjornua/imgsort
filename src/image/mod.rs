@@ -3,24 +3,23 @@ mod error;
 use gdk_pixbuf::{Pixbuf, PixbufLoader, InterpType};
 // use glib;
 // use gtk;
-use config;
+// use config;
 use std::path::Path;
 use std::fs::File;
 use std::io::prelude::*;
 
-pub fn get_new_dimensions((width, height): (i32, i32)) -> (i32, i32) {
-    let new_height = (height * config::MAX_WIDTH) / width;
 
-    if new_height <= config::MAX_HEIGHT {
-        (config::MAX_WIDTH, new_height)
+pub fn get_new_dimensions((width, height): (i32, i32), (max_width, min_height): (i32, i32)) -> (i32, i32) {
+    let new_height = (height * max_width) / width;
+
+    if new_height <= min_height {
+        (max_width, new_height)
     } else {
-        ((width * config::MAX_HEIGHT) / height, config::MAX_HEIGHT)
+        ((width * min_height) / height, min_height)
     }
 }
 
-pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Pixbuf, error::Error> {
-    // let path = path.as_ref();
-
+pub fn from_path<P: AsRef<Path>>(path: P, dimensions: (i32, i32)) -> Result<Pixbuf, error::Error> {
     let mut file = match File::open(path) {
         Ok(f) => f,
         Err(e) => {
@@ -44,7 +43,7 @@ pub fn from_path<P: AsRef<Path>>(path: P) -> Result<Pixbuf, error::Error> {
             return Err(error::Error::NoPixbuf);
         }
     };
-    let (w, h) = get_new_dimensions((pixbuf.get_width(), pixbuf.get_height()));
+    let (w, h) = get_new_dimensions((pixbuf.get_width(), pixbuf.get_height()), dimensions);
     let pixbuf = pixbuf.scale_simple(w, h, InterpType::Hyper).unwrap();
     Ok(pixbuf)
 }

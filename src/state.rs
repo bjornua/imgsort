@@ -60,4 +60,10 @@ impl State {
     fn mark_sorted(&mut self, position: usize) {
         self.sorted.insert(position, self.unsorted.pop().unwrap())
     }
+    pub fn get_unsorted(&self) -> Vec<&Path> {
+        self.unsorted.iter().map(|x| x.as_path()).collect()
+    }
+    pub fn get_sorted(&self) -> Vec<&Path> {
+        self.sorted.iter().map(|x| x.as_path()).collect()
+    }
 }
