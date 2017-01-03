@@ -36,15 +36,19 @@ impl CompareImages {
         grid.add(&image0);
         grid.add(&image1);
 
+        use std::rc::Rc;
+        let on_compare = Rc::new(on_compare);
         {
             let button = gtk::Button::new_with_mnemonic("Image _1 is better");
+            let on_compare = on_compare.clone();
+            button.connect_clicked(move |_| {on_compare(Ordering::Greater) })
+            ;
             grid.attach_next_to(&button, Some(&image0), gtk::PositionType::Bottom, 1, 1);
-            button.connect_activate(|_| on_compare(Ordering::Less));
         };
         {
             let button = gtk::Button::new_with_mnemonic("Image _2 is better");
             grid.attach_next_to(&button, Some(&image1), gtk::PositionType::Bottom, 1, 1);
-            button.connect_activate(|_| on_compare(Ordering::Greater));
+            button.connect_clicked(move |_| on_compare(Ordering::Less));
 
         };
         let images = CompareImages {

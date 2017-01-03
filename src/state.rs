@@ -56,9 +56,12 @@ impl State {
             let compare_begin = self.compare_begin;
             self.mark_sorted(compare_begin)
         }
+        println!("{:#?}", self);
     }
     fn mark_sorted(&mut self, position: usize) {
-        self.sorted.insert(position, self.unsorted.pop().unwrap())
+        self.sorted.insert(position, self.unsorted.pop().unwrap());
+        self.compare_begin = 0;
+        self.compare_end = self.sorted.len();
     }
     pub fn get_unsorted(&self) -> Vec<&Path> {
         self.unsorted.iter().map(|x| x.as_path()).collect()

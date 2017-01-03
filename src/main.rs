@@ -12,7 +12,7 @@ extern crate glib;
 
 use gtk::{Window, WindowType};
 use gtk::prelude::*;
-use std::cell::RefCell;
+use std::cell::{RefCell};
 use std::rc::Rc;
 
 fn main() {
@@ -29,31 +29,46 @@ fn main() {
     use std::path::PathBuf;
 
     state.borrow_mut().add_files(vec![
-        PathBuf::from("/home/bjorn/projects/imgsort/images/10.jpg"),
-        PathBuf::from("/home/bjorn/projects/imgsort/images/9.jpg"),
-        PathBuf::from("/home/bjorn/projects/imgsort/images/3.jpg"),
-        PathBuf::from("/home/bjorn/projects/imgsort/images/5.jpg"),
-        PathBuf::from("/home/bjorn/projects/imgsort/images/8.jpg"),
-        PathBuf::from("/home/bjorn/projects/imgsort/images/7.jpg"),
-        PathBuf::from("/home/bjorn/projects/imgsort/images/2.jpg"),
-        PathBuf::from("/home/bjorn/projects/imgsort/images/6.jpg"),
-        PathBuf::from("/home/bjorn/projects/imgsort/images/4.jpg"),
         PathBuf::from("/home/bjorn/projects/imgsort/images/1.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/6.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/7.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/10.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/4.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/3.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/8.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/5.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/9.jpg"),
+        PathBuf::from("/home/bjorn/projects/imgsort/images/2.jpg"),
     ]);
     let view: Rc<RefCell<Option<views::Main>>> = Rc::new(RefCell::new(None));
+
+    fn update_view(view: &Rc<RefCell<Option<views::Main>>>, state: &Rc<RefCell<state::State>>) {
+        // let state = state.clone();
+        // let view = view.clone();
+        view.borrow_mut().as_mut().unwrap().update_state(&state.borrow());
+    }
+
     let on_files = {
         let state = state.clone();
         let view = view.clone();
         move |files| {
             state.borrow_mut().add_files(files);
-            view.borrow_mut().as_mut().unwrap().update_state(&state.borrow());
+            update_view(&view, &state);
         }
     };
+    let on_compare = {
+        let state = state.clone();
+        let view = view.clone();
 
+        move |order| {
+            state.borrow_mut().compare(order);
+            update_view(&view, &state);
+        }
+    };
     {
         let mut view = view.borrow_mut();
-        *view = Some(views::Main::new(&window, &state.borrow(), on_files));
-    }
+        *view = Some(views::Main::new(&window, &state.borrow(), on_files, on_compare));
+    };
 
     window.add(view.borrow().as_ref().unwrap().get_gtk_box());
 

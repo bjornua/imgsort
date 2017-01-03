@@ -1,11 +1,4 @@
-#![allow(dead_code, unused_variables, unused_imports)]
 use gtk;
-use gtk::prelude::*;
-
-use std::path::Path;
-use std::cmp::min;
-
-use image;
 use state::State;
 
 pub struct StatusBar {
