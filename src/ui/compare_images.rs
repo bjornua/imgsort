@@ -5,30 +5,52 @@ use image;
 use std::path::Path;
 
 pub struct CompareImages {
-    widget: gtk::Box,
+    widget: gtk::Grid,
     image0: gtk::Image,
     image1: gtk::Image,
-    dimensions: (i32, i32)
 }
 
+const DIMENSIONS: (i32, i32) = (512, 512);
 type ImagePair<'a> = Option<(&'a Path, &'a Path)>;
 
+use std::cmp::Ordering;
 impl CompareImages {
-    pub fn new_from_pair(pair: ImagePair, dimensions: (i32, i32)) -> Self {
-        let b = gtk::Box::new(gtk::Orientation::Horizontal, 0);
-        b.set_valign(gtk::Align::Start);
-        b.set_homogeneous(true);
+    pub fn new_from_pair<F: Fn(Ordering) + 'static>(pair: ImagePair, on_compare: F) -> Self {
+        let grid = gtk::Grid::new();
+        grid.set_row_spacing(10);
+        grid.set_column_spacing(20);
+        grid.set_hexpand(true);
+        grid.set_vexpand(true);
+        grid.set_valign(gtk::Align::Fill);
+        grid.set_halign(gtk::Align::Fill);
 
         let image0 = gtk::Image::new();
         let image1 = gtk::Image::new();
-        b.add(&image0);
-        b.add(&image1);
 
+        image0.set_hexpand(true);
+        image1.set_hexpand(true);
+
+        image0.set_vexpand(true);
+        image1.set_vexpand(true);
+
+        grid.add(&image0);
+        grid.add(&image1);
+
+        {
+            let button = gtk::Button::new_with_mnemonic("Image _1 is better");
+            grid.attach_next_to(&button, Some(&image0), gtk::PositionType::Bottom, 1, 1);
+            button.connect_activate(|_| on_compare(Ordering::Less));
+        };
+        {
+            let button = gtk::Button::new_with_mnemonic("Image _2 is better");
+            grid.attach_next_to(&button, Some(&image1), gtk::PositionType::Bottom, 1, 1);
+            button.connect_activate(|_| on_compare(Ordering::Greater));
+
+        };
         let images = CompareImages {
-            widget: b,
+            widget: grid,
             image0: image0,
             image1: image1,
-            dimensions: dimensions,
         };
         images.update_pair(pair);
         images
@@ -36,30 +58,29 @@ impl CompareImages {
     pub fn update_pair(&self, pair: ImagePair) {
         match pair {
             None => {
-                let pixbuf = image::from_path("./images/placeholder.jpg", self.dimensions).unwrap();
+                let pixbuf = image::from_path("./images/placeholder.jpg", DIMENSIONS).unwrap();
                 self.image0.set_from_pixbuf(Some(&pixbuf));
                 self.image1.set_from_pixbuf(Some(&pixbuf));
             }
             Some((path0, path1)) => {
-                match image::from_path(path0, self.dimensions) {
+                match image::from_path(path0, DIMENSIONS) {
                     Ok(pixbuf) => self.image0.set_from_pixbuf(Some(&pixbuf)),
                     Err(_) => {
-                        let err_pixbuf = image::from_path("./images/error.jpg", self.dimensions).unwrap();
+                        let err_pixbuf = image::from_path("./images/error.jpg", DIMENSIONS).unwrap();
                         self.image0.set_from_pixbuf(Some(&err_pixbuf))
                     }
                 }
-                match image::from_path(path1, self.dimensions) {
+                match image::from_path(path1, DIMENSIONS) {
                     Ok(pixbuf) => self.image1.set_from_pixbuf(Some(&pixbuf)),
                     Err(_) => {
-                        let err_pixbuf = image::from_path("./images/error.jpg", self.dimensions).unwrap();
+                        let err_pixbuf = image::from_path("./images/error.jpg", DIMENSIONS).unwrap();
                         self.image1.set_from_pixbuf(Some(&err_pixbuf))
                     }
                 }
             }
         }
-
     }
-    pub fn get_gtk_box(&self) -> &gtk::Box {
+    pub fn get_gtk_box(&self) -> &gtk::Grid {
         &self.widget
     }
 }

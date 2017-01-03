@@ -11,12 +11,14 @@ pub struct Main {
 }
 
 use std::path::PathBuf;
+use std::cmp::Ordering;
+
 
 impl Main {
-    pub fn new<F: Fn(Vec<PathBuf>) + 'static>(parent_window: &gtk::Window,
+    pub fn new<F, G>(parent_window: &gtk::Window,
                                               state: &State,
-                                              on_add_files: F)
-                                              -> Self {
+                                              on_add_files: F, on_compare: G)
+                                              -> Self where F: Fn(Vec<PathBuf>) + 'static, G: Fn(Ordering) + 'static {
         let b = gtk::Box::new(gtk::Orientation::Vertical, 0);
         b.set_valign(gtk::Align::Fill);
 
@@ -25,13 +27,11 @@ impl Main {
 
         let grid = gtk::Grid::new();
 
-        let images = ui::CompareImages::new_from_pair(state.get_pair(), (512, 512));
+        let images = ui::CompareImages::new_from_pair(state.get_pair(), on_compare);
         {
             let b = images.get_gtk_box();
-            b.set_valign(gtk::Align::Start);
             grid.attach(b, 0, 0, 2, 1);
         };
-
         b.pack_start(&grid, true, true, 0);
         let status_bar = ui::StatusBar::new();
         status_bar.update(state);
