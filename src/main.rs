@@ -21,11 +21,6 @@ fn main() {
         return;
     }
     let window = Window::new(WindowType::Toplevel);
-    let style_context = window.get_style_context().unwrap();
-    let css_style = gtk::CssProvider::new();
-    css_style.load_from_data(CSS).unwrap();
-    style_context.add_provider(&css_style, 1000000);
-
 
     window.set_title("Image Ranker");
     window.set_default_size(350, 70);

@@ -30,9 +30,12 @@
             "working_dir": "${project_path:${folder}}",
             "variants": [
                 {
-                "name": "GTK Interactive Debug",
-                "env": {"GTK_DEBUG": "interactive"}
-
+                    "name": "GTK Interactive Debug",
+                    "env": {"GTK_DEBUG": "interactive"}
+                },
+                {
+                    "name": "GTK Layout borders",
+                    "env": {"GTK_DEBUG": "layout"}
                 }
             ]
         }
