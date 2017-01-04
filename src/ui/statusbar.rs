@@ -22,7 +22,11 @@ impl StatusBar {
         let unsorted = state.get_unsorted().len();
         let total = sorted + unsorted;
 
-        let s = format!("Sorted {} images out of {}", sorted, total);
+        let compared = state.get_compared_count();
+        let compares_left = state.get_approx_sorts_remaining();
+        let compares_total = compared + compares_left;
+
+        let s = format!("Sorted {} images out of {} | Compared {} out of {}", sorted, total, compared, compares_total);
 
         self.widget.push(self.context_id, &s);
     }

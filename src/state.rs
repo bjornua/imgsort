@@ -3,12 +3,13 @@ use std::cmp::Ordering;
 use std::path::Path;
 use std::path::PathBuf;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct State {
     unsorted: Vec<PathBuf>,
     sorted: Vec<PathBuf>,
     compare_begin: usize,
     compare_end: usize,
+    compared_count: u64
 }
 
 impl State {
@@ -18,6 +19,7 @@ impl State {
             sorted: Vec::new(),
             compare_begin: 0,
             compare_end: 0,
+            compared_count: 0,
         }
     }
     pub fn add_files(&mut self, mut files: Vec<PathBuf>) {
@@ -46,6 +48,9 @@ impl State {
         Some((left, right))
     }
     pub fn compare(&mut self, ord: Ordering) {
+        if self.get_pair() == None {
+            return;
+        }
         let idx = self.get_right_idx();
         match ord {
             Ordering::Less => self.compare_end = idx,
@@ -56,17 +61,30 @@ impl State {
             let compare_begin = self.compare_begin;
             self.mark_sorted(compare_begin)
         }
-        println!("{:#?}", self);
+        self.compared_count += 1;
     }
     fn mark_sorted(&mut self, position: usize) {
         self.sorted.insert(position, self.unsorted.pop().unwrap());
         self.compare_begin = 0;
         self.compare_end = self.sorted.len();
     }
+    pub fn get_compared_count(&self) -> u64 {
+        self.compared_count
+    }
     pub fn get_unsorted(&self) -> Vec<&Path> {
         self.unsorted.iter().map(|x| x.as_path()).collect()
     }
     pub fn get_sorted(&self) -> Vec<&Path> {
         self.sorted.iter().map(|x| x.as_path()).collect()
+    }
+    pub fn get_approx_sorts_remaining(&self) -> u64 {
+        let mut s = (*self).clone();
+        let mut i = 0;
+        use std::cmp::Ordering;
+        while s.get_pair() != None {
+            i += 1;
+            (&mut s).compare(Ordering::Greater);
+        }
+        i
     }
 }
