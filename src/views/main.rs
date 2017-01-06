@@ -17,7 +17,6 @@ use std::path::PathBuf;
 
 impl Main {
     pub fn new<F, G>(parent_window: &gtk::Window,
-                     state: &State,
                      on_add_files: F,
                      on_compare: G)
                      -> Self
@@ -32,7 +31,7 @@ impl Main {
 
         let grid = gtk::Grid::new();
 
-        let images = ui::CompareImages::new_from_pair(state.get_pair(), on_compare);
+        let images = ui::CompareImages::new(on_compare);
         {
             let b = images.get_gtk_box();
             grid.attach(b, 0, 0, 2, 1);
@@ -40,11 +39,9 @@ impl Main {
         b.pack_start(&grid, true, true, 0);
 
         let progress_bar = ui::ProgressBar::new();
-        progress_bar.update(state);
         b.pack_start(progress_bar.get_gtk_progressbar(), false, false, 0);
 
         let status_bar = ui::StatusBar::new();
-        status_bar.update(state);
         b.pack_end(status_bar.get_gtk_statusbar(), false, false, 0);
 
         return Main {
@@ -54,8 +51,8 @@ impl Main {
             progress_bar: progress_bar,
         };
     }
-    pub fn update_state(&self, state: &State) {
-        self.images.update_pair(state.get_pair());
+    pub fn update(&self, state: &State) {
+        self.images.set_pair(state.get_pair());
         self.status_bar.update(state);
         self.progress_bar.update(state);
     }

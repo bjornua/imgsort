@@ -26,7 +26,7 @@ fn main() {
     window.set_default_size(350, 70);
 
     let state = Rc::new(RefCell::new(state::State::new()));
-    use std::path::PathBuf;
+    // use std::path::PathBuf;
 
     state.borrow_mut().add_files(vec![
 
@@ -34,9 +34,7 @@ fn main() {
     let view: Rc<RefCell<Option<views::Main>>> = Rc::new(RefCell::new(None));
 
     fn update_view(view: &Rc<RefCell<Option<views::Main>>>, state: &Rc<RefCell<state::State>>) {
-        // let state = state.clone();
-        // let view = view.clone();
-        view.borrow_mut().as_mut().unwrap().update_state(&state.borrow());
+        view.borrow_mut().as_mut().unwrap().update(&state.borrow());
     }
 
     let on_files = {
@@ -57,8 +55,11 @@ fn main() {
         }
     };
     {
+        let realview = views::Main::new(&window, on_files, on_compare);
+        realview.update(&state.borrow());
+
         let mut view = view.borrow_mut();
-        *view = Some(views::Main::new(&window, &state.borrow(), on_files, on_compare));
+        *view = Some(realview);
     };
 
     window.add(view.borrow().as_ref().unwrap().get_gtk_box());

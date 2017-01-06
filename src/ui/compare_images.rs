@@ -25,11 +25,11 @@ fn load_image(path: &Path) -> (Cow<str>, Image) {
     }
 }
 
-type ImagePair<'a> = (&'a Path, &'a Path);
+type ImagePair<'a> = Option<(&'a Path, &'a Path)>;
 
 use std::cmp::Ordering;
 impl CompareImages {
-    pub fn new_from_pair<F: Fn(Ordering) + 'static>(pair: ImagePair, on_compare: F) -> Self {
+    pub fn new<F: Fn(Ordering) + 'static>(on_compare: F) -> Self {
         let grid = gtk::Grid::new();
         grid.set_row_spacing(10);
         grid.set_column_spacing(20);
@@ -71,14 +71,21 @@ impl CompareImages {
             image0: image0,
             image1: image1,
         };
-        images.update_pair(pair);
         images
     }
-    pub fn update_pair(&self, (path0, path1): ImagePair) {
-        let (text0, image0) = load_image(path0);
-        let (text1, image1) = load_image(path1);
-        image0.update_gtk_image(&self.image0);
-        image1.update_gtk_image(&self.image1);
+    pub fn set_pair(&self, pair: ImagePair) {
+        match pair {
+            Some((path0, path1)) => {
+                let (_, image0) = load_image(path0);
+                let (_, image1) = load_image(path1);
+                image0.update_gtk_image(&self.image0);
+                image1.update_gtk_image(&self.image1);
+            }
+            None => {
+                self.image0.clear();
+                self.image1.clear();
+            }
+        }
     }
     pub fn get_gtk_box(&self) -> &gtk::Grid {
         &self.widget
