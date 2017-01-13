@@ -26,7 +26,6 @@ fn main() {
     window.set_default_size(350, 70);
 
     let state = Rc::new(RefCell::new(state::State::new()));
-    // use std::path::PathBuf;
 
     state.borrow_mut().add_files(vec![
 
