@@ -1,10 +1,11 @@
+#![allow(dead_code)]
 // NOTE: Use binary insertion sort (it has a low amount of comparisons)
 // NOTE: GTK_DEBUG=interactive,layout to debug layout
 
 mod image;
 mod ui;
-mod views;
 mod state;
+mod view;
 
 extern crate gtk;
 extern crate gdk_pixbuf;
@@ -12,16 +13,15 @@ extern crate glib;
 
 use gtk::{Window, WindowType};
 use gtk::prelude::*;
-use std::cell::{RefCell};
-use std::rc::Rc;
 
 fn main() {
     if gtk::init().is_err() {
         println!("Failed to initialize GTK.");
         return;
     }
-    let window = Window::new(WindowType::Toplevel);
+}
 
+/*
     window.set_title("Image Ranker");
     window.set_default_size(350, 70);
 
@@ -72,3 +72,6 @@ fn main() {
 
     gtk::main();
 }
+
+
+*/

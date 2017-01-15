@@ -22,7 +22,7 @@ impl MenuBar {
         menubar.append(&menu_file);
         return MenuBar { widget: menubar };
     }
-    pub fn get_gtk_menubar<'c>(&'c self) -> &'c gtk::MenuBar {
+    pub fn get_gtk_menubar(&self) -> &gtk::MenuBar {
         &self.widget
     }
 }
@@ -64,17 +64,3 @@ pub fn prompt_files_add(parent: &gtk::Window) -> Vec<PathBuf> {
     };
     retval
 }
-
-// pub fn menu_item_img(icon_name: &'static str, label: &'static str) -> gtk::MenuItem {
-//     let b = gtk::Box::new(gtk::Orientation::Horizontal, 6);
-//     b.set_homogeneous(false);
-//     b.set_halign(gtk::Align::Start);
-//     let label = gtk::Label::new_with_mnemonic(Some(label));
-//     let image = gtk::Image::new_from_icon_name(icon_name, gtk::IconSize::Menu.into());
-//     b.set_hexpand(true);
-//     b.add(&image);
-//     b.pack_end(&label, true, true, 0);
-//     let menuitem = gtk::MenuItem::new();
-//     menuitem.add(&b);
-//     menuitem
-// }

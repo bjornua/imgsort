@@ -1,9 +1,14 @@
-pub mod menubar;
-pub mod compare_images;
-pub mod statusbar;
-pub mod progressbar;
+use state;
 
-pub use self::compare_images::CompareImages;
-pub use self::statusbar::StatusBar;
-pub use self::menubar::MenuBar;
-pub use self::progressbar::ProgressBar;
+pub struct UI {
+
+}
+
+impl UI {
+    pub fn new() -> Self {
+        UI{}
+    }
+    pub fn update(&mut self, state: &state::State) {
+
+    }
+}
