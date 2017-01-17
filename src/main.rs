@@ -1,10 +1,11 @@
-#![allow(dead_code)]
+#![allow(dead_code,unused_imports)]
 // NOTE: Use binary insertion sort (it has a low amount of comparisons)
 // NOTE: GTK_DEBUG=interactive,layout to debug layout
 
 mod image;
 mod ui;
 mod state;
+mod event;
 mod view;
 
 extern crate gtk;
