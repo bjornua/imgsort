@@ -13,19 +13,18 @@ use gtk::{Window, WindowType};
 use gtk::prelude::*;
 
 
-
-fn 
-
-fn handle_event(event: Event, (state, view): (Event, State, View)) -> (State, View) {
-
+fn handle_event(event: Event, &mut (state,view): &mut (State, View)) {
+    reduce_event(event, &mut state);
+    view.update(&state);
 }
 
-fn reduce_event(event: event::Event, state: state::State) -> state::State {
+fn reduce_event(event: Event, state: &mut State) {
 
 }
 
 use state::State;
 use view::View;
+use event::Event;
 use event_handler::EventHandler;
 fn main() {
     if gtk::init().is_err() {
@@ -35,10 +34,10 @@ fn main() {
 
     let state = State::new();
 
-    let event_handler = EventHandler<(State, View)>::new(&handle_event);
+    let event_handler = EventHandler::new(handle_event);
 
     let view = View::new(&state, event_handler);
-    let event_handler = event::make_handler(state, handle_event);
+    event_handler.set((state, view));
 }
 /*
     window.set_title("Image Ranker");

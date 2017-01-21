@@ -8,15 +8,13 @@ pub struct View {
     ui: ui::UI
 }
 
-type EventHandler<'a, 'b> = &'a Fn(Event, &'b mut View);
-
 impl View {
-    pub fn new(state: &State, f: EventHandler) -> Self {
+    pub fn new<F: Fn(Event)>(state: &State, f: F) -> Self {
         View {
             ui: ui::UI::new()
         }
     }
-    fn update(&mut self, state: &State) {
+    pub fn update(&mut self, state: &State) {
         &self.ui.update(&state);
     }
 }
