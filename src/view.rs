@@ -1,32 +1,22 @@
 use std::rc::Rc;
 use std::cell::RefCell;
 use ui;
-use state;
+use state::State;
+use event::Event;
 
-struct View {
+pub struct View {
     ui: ui::UI
 }
 
-struct WrappedView (
-    Rc<RefCell<View>>
-);
+type EventHandler<'a, 'b> = &'a Fn(Event, &'b mut View);
 
 impl View {
-    fn new() -> Self {
+    pub fn new(state: &State, f: EventHandler) -> Self {
         View {
             ui: ui::UI::new()
         }
     }
-    fn update(&mut self, state: &state::State) {
+    fn update(&mut self, state: &State) {
         &self.ui.update(&state);
-    }
-}
-
-impl WrappedView {
-    fn new() -> Self {
-        WrappedView(Rc::new(RefCell::new(View::new())))
-    }
-    fn update(&self) {
-
     }
 }

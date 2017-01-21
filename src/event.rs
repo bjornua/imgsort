@@ -2,7 +2,7 @@ use std::path::PathBuf;
 use std::cmp::Ordering;
 
 
-enum Event {
+pub enum Event {
     AddUnsortedFiles(Vec<PathBuf>),
     Compare(Ordering),
 }

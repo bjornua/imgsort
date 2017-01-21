@@ -15,13 +15,23 @@ extern crate glib;
 use gtk::{Window, WindowType};
 use gtk::prelude::*;
 
+fn handle_event(event: event::Event, state: state::State) -> state::State {
+
+}
+
+use state::State;
+use view::View;
 fn main() {
     if gtk::init().is_err() {
         println!("Failed to initialize GTK.");
         return;
     }
-}
 
+    let state = State::new();
+
+    let view = View::new(&state, event_handler);
+    let event_handler = event::make_handler(state, handle_event);
+}
 /*
     window.set_title("Image Ranker");
     window.set_default_size(350, 70);
