@@ -1,13 +1,10 @@
 #![allow(dead_code,unused_imports)]
-// NOTE: Use binary insertion sort (it has a low amount of comparisons)
-// NOTE: GTK_DEBUG=interactive,layout to debug layout
-
 mod image;
 mod ui;
 mod state;
 mod event;
+mod event_handler;
 mod view;
-
 extern crate gtk;
 extern crate gdk_pixbuf;
 extern crate glib;
@@ -15,12 +12,21 @@ extern crate glib;
 use gtk::{Window, WindowType};
 use gtk::prelude::*;
 
-fn handle_event(event: event::Event, state: state::State) -> state::State {
+
+
+fn 
+
+fn handle_event(event: Event, (state, view): (Event, State, View)) -> (State, View) {
+
+}
+
+fn reduce_event(event: event::Event, state: state::State) -> state::State {
 
 }
 
 use state::State;
 use view::View;
+use event_handler::EventHandler;
 fn main() {
     if gtk::init().is_err() {
         println!("Failed to initialize GTK.");
@@ -28,6 +34,8 @@ fn main() {
     }
 
     let state = State::new();
+
+    let event_handler = EventHandler<(State, View)>::new(&handle_event);
 
     let view = View::new(&state, event_handler);
     let event_handler = event::make_handler(state, handle_event);
