@@ -13,7 +13,7 @@ impl<V, S> EventHandler<V, S> {
             reducer: reducer
         }
     }
-    fn call(&self, value: V) {
+    pub fn call(&self, value: V) {
         let state = Rc::get_mut(&mut self.state).unwrap();
         (self.reducer)(value, &mut state.unwrap())
 

@@ -35,8 +35,7 @@ fn main() {
     let state = State::new();
 
     let event_handler = EventHandler::new(handle_event);
-
-    let view = View::new(&state, event_handler);
+    let view = View::new(&state, |e| {event_handler.call(e)});
     event_handler.set((state, view));
 }
 /*
